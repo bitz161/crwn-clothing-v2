@@ -1,9 +1,9 @@
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
-  signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 
 //Firestore Database
@@ -40,9 +40,9 @@ export const db = getFirestore();
 
 //Store logins from firestore from the authentication
 export const createUserDocumentFromAuth = async (userAuth) => {
-  const userDocRef = doc(db, "users", userAuth.uid);
+  if (!userAuth) return;
 
-  console.log(userDocRef);
+  const userDocRef = doc(db, "users", userAuth.uid);
 
   const userSnapshot = await getDoc(userDocRef);
 
@@ -67,4 +67,11 @@ export const createUserDocumentFromAuth = async (userAuth) => {
   }
 
   return userDocRef;
+};
+
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  //if query means !email is empty or !password is empty = return or end the function
+  if (!email || !password) return;
+
+  return await createAuthUserWithEmailAndPassword(auth, email, password);
 };
