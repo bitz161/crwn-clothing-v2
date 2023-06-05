@@ -33,10 +33,6 @@ export const auth = getAuth();
 //sign-in using google poup
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
-//sign-in redirect
-export const signInWithGoogleRedirect = () =>
-  signInWithGoogleRedirect(auth, googleProvider);
-//TODO:need to fix error
 
 //Firestore
 //initialize access from firestore
