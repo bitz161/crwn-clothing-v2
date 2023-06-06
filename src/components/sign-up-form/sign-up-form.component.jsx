@@ -1,6 +1,9 @@
 import { useState } from "react";
 import "./sign-up-form.styles.scss";
-import { createUserDocumentFromAuth } from "../../util/firebase/firebase.ulti";
+import {
+  createAuthUserWithEmailAndPassword,
+  createUserDocumentFromAuth,
+} from "../../util/firebase/firebase.ulti";
 
 const SignUpForm = () => {
   const defaultFormField = {
@@ -15,10 +18,26 @@ const SignUpForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const { email, password } = formFields;
-    const userDocRef = await createUserDocumentFromAuth(email, password);
+
+    if (password !== confirmPassword) {
+      alert("password do not watch");
+      return;
+    }
+
+    try {
+      const { user } = await createAuthUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      await createUserDocumentFromAuth(user, { displayName });
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        alert("Cannot create user, email already in use");
+      }
+      console.log("user creation encountered and error", error);
+    }
   };
-  //TODO:create a createuserdocumentfromemailandpassword function in firebase utils
 
   const handleChange = (event) => {
     //name of the input and value is the current value of input
@@ -30,11 +49,7 @@ const SignUpForm = () => {
   return (
     <div>
       <h1>Sign up with your email and password</h1>
-      <form
-        onSubmit={(event) => {
-          handleSubmit();
-        }}
-      >
+      <form onSubmit={(event) => handleSubmit(event)}>
         {/* use name to identify which input is active */}
         <label>Display Name</label>
         <input
